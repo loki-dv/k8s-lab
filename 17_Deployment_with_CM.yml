@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: hello-deployment
+spec:
+   replicas: 10
+   selector:
+      matchLabels:
+         app: hello-demo
+   strategy:
+      type: RollingUpdate
+      rollingUpdate:
+         maxSurge: 1 # how many pods we can add at a time
+         maxUnavailable: 0 # maxUnavailable define how many pods can be unavailable during the rolling update
+   template:
+      metadata:
+         labels:
+            app: hello-demo
+      spec:
+         containers:
+            - name: hello-py
+              image: hello-py:v1
+              ports:
+                 - name: web
+                   containerPort: 80
+              env:
+                 - name: GREETING
+                   valueFrom:
+                      configMapKeyRef:
+                         name: hello-config
+                         key: greeting_var
+              volumeMounts:
+                 - name: config
+                   mountPath: "/config"
+                   readOnly: true
+         volumes:
+            - name: config
+              configMap:
+                 name: hello-config
+                 items:
+                    - key: "config.conf"
+                      path: "greeting.conf"

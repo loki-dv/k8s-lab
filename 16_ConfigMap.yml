@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-config
+data:
+  # property-like keys; each key maps to a simple value
+  greeting_var: "Aloha"
+
+  # file-like keys
+  config.conf: |
+    use_greeting_var=yes

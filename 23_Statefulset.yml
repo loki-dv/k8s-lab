@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hello-statefulset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-demo
+  template:
+    metadata:
+      labels:
+        app: hello-demo
+    spec:
+      containers:
+        - name: hello-py
+          image: hello-py:v1
+          ports:
+            - name: web
+              containerPort: 80
+          volumeMounts:
+            - name: local-pvc
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: local-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: hostpath
+        resources:
+          requests:
+            storage: 1Gi
+        volumeMode: Filesystem
+        dataSource:
+          name: local-volume
+          kind: HostPath
